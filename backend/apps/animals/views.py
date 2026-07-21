@@ -1,26 +1,15 @@
-from rest_framework.viewsets import ModelViewSet
+from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from apps.farms.viewsets import FarmScopedModelViewSet
 
 from .models import Animal, Flock
-from .permissions import FarmRecordPermission
-from .serializers import AnimalSerializer, FlockSerializer
+from .selectors import animal_timeline
+from .serializers import AnimalSerializer, FlockSerializer, TimelineEventSerializer
 
 
-class FarmScopedViewSet(ModelViewSet):
-    permission_classes = [FarmRecordPermission]
-    farm = None
-
-    def initial(self, request, *args, **kwargs):
-        super().initial(request, *args, **kwargs)
-        self.farm = request.selected_farm
-
-    def get_serializer_context(self):
-        return {**super().get_serializer_context(), "farm": self.farm}
-
-    def perform_create(self, serializer):
-        serializer.save(farm=self.farm)
-
-
-class FlockViewSet(FarmScopedViewSet):
+class FlockViewSet(FarmScopedModelViewSet):
     queryset = Flock.objects.none()
     serializer_class = FlockSerializer
 
@@ -28,7 +17,7 @@ class FlockViewSet(FarmScopedViewSet):
         return Flock.objects.filter(farm=self.farm)
 
 
-class AnimalViewSet(FarmScopedViewSet):
+class AnimalViewSet(FarmScopedModelViewSet):
     queryset = Animal.objects.none()
     serializer_class = AnimalSerializer
 
@@ -42,3 +31,8 @@ class AnimalViewSet(FarmScopedViewSet):
         if search:
             queryset = queryset.filter(ear_tag__icontains=search)
         return queryset
+
+    @extend_schema(responses=TimelineEventSerializer(many=True))
+    @action(detail=True, methods=["get"])
+    def timeline(self, request, pk=None):
+        return Response(animal_timeline(animal=self.get_object()))

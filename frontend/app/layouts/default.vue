@@ -9,7 +9,7 @@ const selectedFarmId = useState<string | null>('selected-farm-id', () => null)
       <nav aria-label="Primary navigation">
         <NuxtLink to="/">Dashboard</NuxtLink>
         <NuxtLink to="/animals">Animals</NuxtLink>
-        <NuxtLink to="/flocks/new">New flock</NuxtLink>
+        <NuxtLink to="/tasks">Tasks</NuxtLink>
       </nav>
       <span v-if="selectedFarmId" class="farm-indicator">Farm selected</span>
     </header>

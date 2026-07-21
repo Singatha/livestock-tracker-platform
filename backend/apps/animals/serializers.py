@@ -54,3 +54,12 @@ class AnimalSerializer(serializers.ModelSerializer):
         if flock is not None and flock.farm_id != farm.id:
             raise serializers.ValidationError("Flock does not belong to the selected farm")
         return flock
+
+
+class TimelineEventSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    kind = serializers.ChoiceField(choices=["observation", "treatment", "task"])
+    date = serializers.CharField()
+    title = serializers.CharField()
+    details = serializers.CharField(allow_blank=True)
+    status = serializers.CharField()

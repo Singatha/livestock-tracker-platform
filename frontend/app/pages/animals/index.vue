@@ -36,7 +36,7 @@ onMounted(loadAnimals)
         <thead><tr><th>Ear tag</th><th>Name</th><th>Species</th><th>Breed</th><th>Status</th></tr></thead>
         <tbody>
           <tr v-for="animal in animals" :key="animal.id">
-            <td>{{ animal.ear_tag }}</td><td>{{ animal.name || '—' }}</td><td>{{ animal.species }}</td><td>{{ animal.breed || '—' }}</td><td><span class="status">{{ animal.status }}</span></td>
+            <td><NuxtLink class="table-link" :to="`/animals/${animal.id}`">{{ animal.ear_tag }}</NuxtLink></td><td>{{ animal.name || '—' }}</td><td>{{ animal.species }}</td><td>{{ animal.breed || '—' }}</td><td><span class="status">{{ animal.status }}</span></td>
           </tr>
         </tbody>
       </table>

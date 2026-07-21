@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.farms",
     "apps.animals",
+    "apps.health",
+    "apps.husbandry",
     "apps.dashboard",
 ]
 

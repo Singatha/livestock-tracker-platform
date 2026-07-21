@@ -41,6 +41,9 @@ onMounted(async () => {
       <article><span>Sheep</span><strong>{{ summary.sheep }}</strong></article>
       <article><span>Goats</span><strong>{{ summary.goats }}</strong></article>
       <article class="attention"><span>Need attention</span><strong>{{ summary.needs_attention }}</strong></article>
+      <article><span>Open health concerns</span><strong>{{ summary.open_health_concerns }}</strong></article>
+      <article class="attention"><span>Overdue tasks</span><strong>{{ summary.overdue_tasks }}</strong></article>
+      <article><span>Due in 7 days</span><strong>{{ summary.due_next_7_days }}</strong></article>
     </div>
     <div v-else class="empty-state">
       <h2>{{ errorMessage || 'No farm selected' }}</h2>
