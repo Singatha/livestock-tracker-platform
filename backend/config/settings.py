@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "apps.audit.apps.AuditConfig",
+    "apps.attachments",
     "apps.accounts",
     "apps.farms",
     "apps.animals",
@@ -93,6 +94,8 @@ TIME_ZONE = "Africa/Johannesburg"
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
+MEDIA_ROOT = BASE_DIR / "media"
+ATTACHMENT_MAX_SIZE = int(os.getenv("DJANGO_ATTACHMENT_MAX_SIZE", str(10 * 1024 * 1024)))
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 

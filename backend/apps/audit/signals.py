@@ -6,6 +6,7 @@ from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from apps.animals.models import Animal, Flock
+from apps.attachments.models import Attachment
 from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation, Treatment
 from apps.husbandry.models import HusbandryTask
@@ -22,6 +23,7 @@ from .context import audit_context
 from .models import AuditEvent
 
 TRACKED_MODELS = (
+    Attachment,
     Flock,
     Animal,
     HealthObservation,
@@ -42,6 +44,8 @@ IGNORED_FIELDS = {"id", "created_at", "updated_at", "farm"}
 
 
 def _value(value):
+    if hasattr(value, "name") and not isinstance(value, str):
+        return value.name
     if isinstance(value, (date, datetime, Decimal, UUID)):
         return str(value)
     return value

@@ -39,6 +39,7 @@ onMounted(async () => {
       <article><span>Attention</span><strong>{{ animal.needs_attention ? 'Required' : 'No flag' }}</strong></article>
       <article><span>Date of birth</span><strong>{{ animal.date_of_birth ? new Date(animal.date_of_birth).toLocaleDateString() : 'Not recorded' }}</strong></article>
     </div>
+    <section class="mt-8"><div class="mb-4"><p class="eyebrow">Photos and records</p><h2>Animal files</h2></div><AttachmentManager :animal-id="animal.id" /></section>
     <section class="timeline-section">
       <h2>History and upcoming work</h2>
       <ol v-if="timeline.length" class="timeline">

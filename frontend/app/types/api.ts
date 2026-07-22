@@ -67,6 +67,19 @@ export interface AuditEvent {
   created_at: string
 }
 
+export interface Attachment {
+  id: string
+  animal: string | null
+  category: 'photo' | 'veterinary' | 'prescription' | 'lab_result' | 'certificate' | 'invoice' | 'other'
+  title: string
+  description: string
+  original_filename: string
+  content_type: string
+  size_bytes: number
+  uploaded_by_name: string
+  created_at: string
+}
+
 export interface Paginated<T> {
   count: number
   next: string | null
