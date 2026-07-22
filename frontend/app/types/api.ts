@@ -22,6 +22,65 @@ export interface DashboardSummary {
   expected_births_next_30_days: number
   overdue_expected_births: number
   animals_losing_weight: number
+  active_treatment_courses: number
+  low_stock_medicines: number
+  expiring_medicine_batches: number
+  animals_under_withdrawal: number
+}
+
+export interface MedicineProduct {
+  id: string
+  name: string
+  active_ingredient: string
+  concentration: string
+  stock_unit: string
+  reorder_level: string
+  meat_withdrawal_days: number
+  milk_withdrawal_days: number
+  instructions: string
+  total_quantity: string
+  is_low_stock: boolean
+}
+
+export interface MedicineBatch {
+  id: string
+  product: string
+  product_name: string
+  batch_number: string
+  expiry_date: string
+  quantity_on_hand: string
+  stock_unit: string
+  is_expired: boolean
+}
+
+export interface TreatmentCourse {
+  id: string
+  animal: string
+  animal_ear_tag: string
+  product: string
+  product_name: string
+  reason: string
+  dosage: string
+  route: string
+  started_on: string
+  planned_doses: number
+  frequency_hours: number | null
+  status: 'active' | 'completed' | 'cancelled'
+  meat_withdrawal_end_date: string | null
+  milk_withdrawal_end_date: string | null
+  notes: string
+  doses_administered: number
+}
+
+export interface DoseAdministration {
+  id: string
+  course: string
+  batch: string
+  batch_number: string
+  product_name: string
+  administered_at: string
+  quantity_used: string
+  notes: string
 }
 
 export interface WeightMeasurement {
@@ -186,7 +245,7 @@ export interface MonthlyActivity {
 
 export interface TimelineEvent {
   id: string
-  kind: 'observation' | 'treatment' | 'task' | 'lifecycle' | 'reproduction' | 'growth'
+  kind: 'observation' | 'treatment' | 'task' | 'lifecycle' | 'reproduction' | 'growth' | 'medicine'
   date: string
   title: string
   details: string

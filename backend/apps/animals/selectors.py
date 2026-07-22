@@ -1,6 +1,7 @@
 from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation, Treatment
 from apps.husbandry.models import HusbandryTask
+from apps.medicine.models import DoseAdministration
 from apps.reproduction.models import BirthRecord, BreedingRecord
 
 from .models import Animal, AnimalLifecycleEvent
@@ -100,6 +101,19 @@ def animal_timeline(*, animal: Animal) -> list[dict]:
                     else measurement.notes
                 ),
                 "status": "recorded",
+            }
+        )
+    for dose in DoseAdministration.objects.filter(course__animal=animal).select_related(
+        "course__product", "batch"
+    ):
+        events.append(
+            {
+                "id": str(dose.id),
+                "kind": "medicine",
+                "date": dose.administered_at.isoformat(),
+                "title": f"{dose.course.product.name} administered",
+                "details": f"{dose.course.dosage}; batch {dose.batch.batch_number}",
+                "status": dose.course.status,
             }
         )
     return sorted(events, key=lambda event: event["date"], reverse=True)

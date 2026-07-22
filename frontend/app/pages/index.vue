@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertTriangle, Beef, CalendarClock, ClipboardPlus, HeartHandshake, HeartPulse, PawPrint, Plus, Scale } from '@lucide/vue'
+import { AlertTriangle, Beef, CalendarClock, ClipboardPlus, HeartHandshake, HeartPulse, PawPrint, Pill, Plus, Scale } from '@lucide/vue'
 import type { DashboardSummary, Farm, Paginated } from '~/types/api'
 
 const { request, selectedFarmId } = useApi()
@@ -58,6 +58,8 @@ onMounted(async () => {
             <NuxtLink to="/tasks" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-secondary text-primary"><CalendarClock /></span><span><strong class="block text-2xl">{{ summary.due_next_7_days }}</strong><small class="text-muted-foreground">Due in the next 7 days</small></span></NuxtLink>
             <NuxtLink to="/reproduction" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-pink-50 text-pink-700"><HeartHandshake /></span><span><strong class="block text-2xl">{{ summary.expected_births_next_30_days }}</strong><small class="text-muted-foreground">Births expected in 30 days</small></span></NuxtLink>
             <NuxtLink to="/reproduction" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-amber-50 text-amber-700"><AlertTriangle /></span><span><strong class="block text-2xl">{{ summary.overdue_expected_births }}</strong><small class="text-muted-foreground">Expected births overdue</small></span></NuxtLink>
+            <NuxtLink to="/medicine" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-sky-50 text-sky-700"><Pill /></span><span><strong class="block text-2xl">{{ summary.active_treatment_courses }}</strong><small class="text-muted-foreground">Active treatment courses</small></span></NuxtLink>
+            <NuxtLink to="/medicine" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-red-50 text-destructive"><AlertTriangle /></span><span><strong class="block text-2xl">{{ summary.animals_under_withdrawal }}</strong><small class="text-muted-foreground">Animals under withdrawal</small></span></NuxtLink>
           </CardContent>
         </Card>
         <Card>
@@ -68,6 +70,7 @@ onMounted(async () => {
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/animals/new"><Plus /> Register an animal</NuxtLink></Button>
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/reproduction/breedings/new"><HeartHandshake /> Record breeding</NuxtLink></Button>
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/growth/new"><Scale /> Record weight</NuxtLink></Button>
+            <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/medicine/courses/new"><Pill /> Start treatment course</NuxtLink></Button>
           </CardContent>
         </Card>
       </div>

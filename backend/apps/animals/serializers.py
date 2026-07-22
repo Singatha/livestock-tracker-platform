@@ -113,7 +113,15 @@ class AnimalLifecycleEventSerializer(serializers.ModelSerializer):
 class TimelineEventSerializer(serializers.Serializer):
     id = serializers.CharField()
     kind = serializers.ChoiceField(
-        choices=["observation", "treatment", "task", "lifecycle", "reproduction", "growth"]
+        choices=[
+            "observation",
+            "treatment",
+            "task",
+            "lifecycle",
+            "reproduction",
+            "growth",
+            "medicine",
+        ]
     )
     date = serializers.CharField()
     title = serializers.CharField()

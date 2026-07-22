@@ -12,6 +12,7 @@ from apps.farms.permissions import selected_farm
 from apps.growth.selectors import weight_loss_count
 from apps.health.models import HealthObservation
 from apps.husbandry.models import HusbandryTask
+from apps.medicine.selectors import medicine_dashboard_counts
 from apps.reproduction.models import BreedingRecord
 
 
@@ -26,6 +27,10 @@ class DashboardSummarySerializer(serializers.Serializer):
     expected_births_next_30_days = serializers.IntegerField()
     overdue_expected_births = serializers.IntegerField()
     animals_losing_weight = serializers.IntegerField()
+    active_treatment_courses = serializers.IntegerField()
+    low_stock_medicines = serializers.IntegerField()
+    expiring_medicine_batches = serializers.IntegerField()
+    animals_under_withdrawal = serializers.IntegerField()
 
 
 class DashboardSummaryView(APIView):
@@ -66,5 +71,6 @@ class DashboardSummaryView(APIView):
                 expected_birth_date__lt=today,
             ).count(),
             animals_losing_weight=weight_loss_count(farm),
+            **medicine_dashboard_counts(farm),
         )
         return Response(summary)

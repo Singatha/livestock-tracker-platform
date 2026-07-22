@@ -12,6 +12,7 @@ from apps.farms.permissions import selected_farm
 from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation
 from apps.husbandry.models import HusbandryTask
+from apps.medicine.models import MedicineBatch
 from apps.nutrition.models import Feed
 
 from .selectors import filtered_animals, monthly_activity, report_filters, report_summary
@@ -176,6 +177,20 @@ class ReportsExportView(APIView):
                     item.weight_kg,
                     item.body_condition_score or "",
                     item.notes,
+                )
+                for item in rows
+            )
+        elif report_type == "medicine":
+            writer.writerow(["Product", "Active ingredient", "Batch", "Expiry", "Quantity", "Unit"])
+            rows = MedicineBatch.objects.filter(farm=farm).select_related("product")
+            writer.writerows(
+                (
+                    item.product.name,
+                    item.product.active_ingredient,
+                    item.batch_number,
+                    item.expiry_date,
+                    item.quantity_on_hand,
+                    item.product.stock_unit,
                 )
                 for item in rows
             )

@@ -47,4 +47,8 @@ def test_dashboard_counts_only_active_animals_for_selected_farm(api_client, farm
         "expected_births_next_30_days": 0,
         "overdue_expected_births": 0,
         "animals_losing_weight": 0,
+        "active_treatment_courses": 0,
+        "low_stock_medicines": 0,
+        "expiring_medicine_batches": 0,
+        "animals_under_withdrawal": 0,
     }

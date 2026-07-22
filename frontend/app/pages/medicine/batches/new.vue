@@ -1,0 +1,8 @@
+<script setup lang="ts">
+import type { MedicineBatch, MedicineProduct, Paginated } from '~/types/api'
+const { request } = useApi(); const products = ref<MedicineProduct[]>([]); const submitting = ref(false); const errorMessage = ref('')
+const form = reactive({ product: '', batch_number: '', expiry_date: '', quantity_on_hand: '' })
+onMounted(async () => { products.value = (await request<Paginated<MedicineProduct>>('/medicine/products/')).results })
+async function submit() { submitting.value = true; errorMessage.value = ''; try { await request<MedicineBatch>('/medicine/batches/', { method: 'POST', body: form }); await navigateTo('/medicine') } catch { errorMessage.value = 'The batch could not be saved. Check its number, expiry, and quantity.' } finally { submitting.value = false } }
+</script>
+<template><section class="form-card wide"><p class="eyebrow">Medicine inventory</p><h1>Add stock batch</h1><form class="form-grid" @submit.prevent="submit"><label>Product <select v-model="form.product" required><option value="">Select product</option><option v-for="item in products" :key="item.id" :value="item.id">{{ item.name }}</option></select></label><label>Batch number <input v-model="form.batch_number" required></label><label>Expiry date <input v-model="form.expiry_date" type="date" required></label><label>Quantity on hand <input v-model="form.quantity_on_hand" type="number" min="0" step="0.01" required></label><p v-if="errorMessage" class="error full">{{ errorMessage }}</p><div class="actions full"><NuxtLink to="/medicine">Cancel</NuxtLink><button :disabled="submitting">{{ submitting ? 'Saving…' : 'Add batch' }}</button></div></form></section></template>
