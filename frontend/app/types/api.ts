@@ -85,6 +85,42 @@ export interface Notification {
   created_at: string
 }
 
+export interface Feed {
+  id: string
+  name: string
+  category: 'forage' | 'concentrate' | 'mineral' | 'supplement' | 'other'
+  suitability: 'sheep' | 'goat' | 'both'
+  unit: string
+  quantity_on_hand: string
+  reorder_level: string
+  unit_cost: string | null
+  notes: string
+  is_low_stock: boolean
+}
+
+export interface FeedingPlanItem {
+  id: string
+  feed: string
+  feed_name: string
+  unit: string
+  quantity_per_animal: string
+  feeding_time: string
+}
+
+export interface FeedingPlan {
+  id: string
+  flock: string
+  flock_name: string
+  name: string
+  life_stage: string
+  start_date: string
+  end_date: string | null
+  is_active: boolean
+  notes: string
+  items: FeedingPlanItem[]
+  compatibility_warnings: string[]
+}
+
 export interface TimelineEvent {
   id: string
   kind: 'observation' | 'treatment' | 'task'

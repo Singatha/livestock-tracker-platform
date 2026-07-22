@@ -12,5 +12,6 @@ urlpatterns = [
     path("api/v1/health/", include("apps.health.urls")),
     path("api/v1/husbandry/", include("apps.husbandry.urls")),
     path("api/v1/notifications/", include("apps.notifications.urls")),
+    path("api/v1/nutrition/", include("apps.nutrition.urls")),
     path("api/v1/dashboard/", include("apps.dashboard.urls")),
 ]
