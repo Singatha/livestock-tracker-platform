@@ -8,7 +8,10 @@ interface ApiOptions {
 
 export function useApi() {
   const config = useRuntimeConfig()
-  const selectedFarmId = useState<string | null>('selected-farm-id', () => null)
+  const selectedFarmId = useCookie<string | null>('selected-farm-id', {
+    default: () => null,
+    sameSite: 'lax',
+  })
   const csrfToken = useState<string | null>('csrf-token', () => null)
 
   async function ensureCsrfToken(): Promise<string> {
@@ -18,6 +21,10 @@ export function useApi() {
     })
     csrfToken.value = response.csrfToken
     return response.csrfToken
+  }
+
+  function resetCsrfToken() {
+    csrfToken.value = null
   }
 
   async function request<T>(path: string, options: ApiOptions = {}): Promise<T> {
@@ -36,5 +43,5 @@ export function useApi() {
     })
   }
 
-  return { request, selectedFarmId }
+  return { request, resetCsrfToken, selectedFarmId }
 }

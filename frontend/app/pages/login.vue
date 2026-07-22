@@ -3,7 +3,7 @@ const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
 const submitting = ref(false)
-const { request } = useApi()
+const { request, resetCsrfToken } = useApi()
 
 async function submit() {
   submitting.value = true
@@ -13,6 +13,8 @@ async function submit() {
       method: 'POST',
       body: { username: username.value, password: password.value },
     })
+    // Django rotates the CSRF secret on login; discard the pre-login token.
+    resetCsrfToken()
     await navigateTo('/')
   } catch {
     errorMessage.value = 'Unable to sign in. Check your username and password.'

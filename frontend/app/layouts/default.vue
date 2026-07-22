@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const selectedFarmId = useState<string | null>('selected-farm-id', () => null)
+const selectedFarmId = useCookie<string | null>('selected-farm-id', {
+  default: () => null,
+  sameSite: 'lax',
+})
 </script>
 
 <template>
