@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Activity, BarChart3, Bell, CalendarCheck2, ChevronDown, Files, HeartHandshake, LayoutDashboard, Menu, PawPrint, Pill, Plus, Scale, Settings, Upload, Wheat } from '@lucide/vue'
-import type { Farm, Notification, Paginated } from '~/types/api'
+import { Activity, BarChart3, Bell, CalendarCheck2, ChevronDown, Files, HeartHandshake, LayoutDashboard, LogOut, Menu, PawPrint, Pill, Plus, Scale, Settings, Upload, UserCircle, Wheat } from '@lucide/vue'
+import type { Farm, Notification, Paginated, User } from '~/types/api'
 
 const selectedFarmId = useCookie<string | null>('selected-farm-id', {
   default: () => null,
@@ -11,7 +11,10 @@ const route = useRoute()
 const mobileOpen = ref(false)
 const notifications = ref<Notification[]>([])
 const farms = ref<Farm[]>([])
-const { request } = useApi()
+const currentUser = ref<User | null>(null)
+const signingOut = ref(false)
+const { request, resetCsrfToken } = useApi()
+const toast = useToast()
 const unreadCount = computed(() => notifications.value.filter(item => !item.is_read).length)
 const currentFarm = computed(() => farms.value.find(farm => farm.id === selectedFarmId.value))
 const navigation = [
@@ -51,6 +54,29 @@ async function loadFarms() {
   }
 }
 
+async function loadCurrentUser() {
+  try {
+    currentUser.value = await request<User>('/auth/me/')
+  } catch {
+    await navigateTo('/login')
+  }
+}
+
+async function signOut() {
+  signingOut.value = true
+  try {
+    await request('/auth/logout/', { method: 'POST' })
+    selectedFarmId.value = null
+    resetCsrfToken()
+    toast.success('Signed out', 'Your session has ended safely.')
+    await navigateTo('/login')
+  } catch {
+    toast.error('Could not sign out', 'Please try again.')
+  } finally {
+    signingOut.value = false
+  }
+}
+
 function selectFarm(farmId: string) {
   selectedFarmId.value = farmId
 }
@@ -62,6 +88,7 @@ async function openNotification(notification: Notification) {
 }
 
 onMounted(async () => {
+  await loadCurrentUser()
   await loadFarms()
   await loadNotifications()
 })
@@ -125,6 +152,14 @@ watch(selectedFarmId, loadNotifications)
               <DropdownMenuItem as-child><NuxtLink to="/medicine/courses/new">Start treatment course</NuxtLink></DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem as-child><NuxtLink to="/farms/new"><Settings /> Create farm</NuxtLink></DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child><Button variant="ghost" class="gap-2 px-2 sm:px-3"><UserCircle class="size-5" /><span class="hidden max-w-32 truncate sm:inline">{{ currentUser?.first_name || currentUser?.username || 'Account' }}</span><ChevronDown class="hidden size-3.5 sm:block" /></Button></DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-56">
+              <DropdownMenuLabel><span class="block truncate">{{ currentUser ? `${currentUser.first_name} ${currentUser.last_name}`.trim() || currentUser.username : 'Account' }}</span><span class="block truncate text-xs font-normal text-muted-foreground">{{ currentUser?.email || currentUser?.username }}</span></DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" :disabled="signingOut" @select="signOut"><LogOut />{{ signingOut ? 'Signing out…' : 'Sign out' }}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
