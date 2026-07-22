@@ -2,7 +2,7 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 interface ApiOptions {
   method?: HttpMethod
-  body?: Record<string, unknown>
+  body?: FormData | Record<string, unknown>
   headers?: HeadersInit
 }
 

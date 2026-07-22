@@ -35,6 +35,26 @@ export interface FarmMembershipAudit {
   created_at: string
 }
 
+export interface ImportError {
+  row: number
+  errors: Record<string, unknown> | string
+}
+
+export interface ImportJob {
+  id: string
+  kind: 'flocks' | 'animals' | 'weights' | 'medicine_batches'
+  mode: 'all_or_nothing' | 'partial'
+  status: 'previewed' | 'completed' | 'failed'
+  original_filename: string
+  rows_total: number
+  rows_succeeded: number
+  rows_failed: number
+  valid_rows: number
+  errors: ImportError[]
+  created_at: string
+  completed_at: string | null
+}
+
 export interface Paginated<T> {
   count: number
   next: string | null
