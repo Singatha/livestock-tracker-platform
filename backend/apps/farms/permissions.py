@@ -34,6 +34,32 @@ class FarmRecordPermission(BasePermission):
         ).exists()
 
 
+class FarmManagerRecordPermission(BasePermission):
+    def has_permission(self, request, view) -> bool:
+        farm = selected_farm(request)
+        request.selected_farm = farm
+        if request.method in SAFE_METHODS:
+            return True
+        return FarmMembership.objects.filter(
+            farm=farm,
+            user=request.user,
+            is_active=True,
+            role__in=[FarmMembership.Role.OWNER, FarmMembership.Role.MANAGER],
+        ).exists()
+
+
+class FarmManagerOnlyPermission(BasePermission):
+    def has_permission(self, request, view) -> bool:
+        farm = selected_farm(request)
+        request.selected_farm = farm
+        return FarmMembership.objects.filter(
+            farm=farm,
+            user=request.user,
+            is_active=True,
+            role__in=[FarmMembership.Role.OWNER, FarmMembership.Role.MANAGER],
+        ).exists()
+
+
 class FarmObjectPermission(BasePermission):
     def has_object_permission(self, request, view, farm) -> bool:
         membership = FarmMembership.objects.filter(

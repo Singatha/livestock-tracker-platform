@@ -8,7 +8,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.farms.permissions import selected_farm
+from apps.farms.permissions import FarmManagerOnlyPermission, selected_farm
 from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation
 from apps.husbandry.models import HusbandryTask
@@ -39,6 +39,8 @@ class MonthlyActivitySerializer(serializers.Serializer):
 
 
 class ReportsOverviewView(APIView):
+    permission_classes = [FarmManagerOnlyPermission]
+
     @extend_schema(responses=ReportSummarySerializer)
     def get(self, request):
         farm = selected_farm(request)
@@ -46,6 +48,8 @@ class ReportsOverviewView(APIView):
 
 
 class ReportsActivityView(APIView):
+    permission_classes = [FarmManagerOnlyPermission]
+
     @extend_schema(responses=MonthlyActivitySerializer(many=True))
     def get(self, request):
         farm = selected_farm(request)
@@ -53,6 +57,8 @@ class ReportsActivityView(APIView):
 
 
 class ReportsExportView(APIView):
+    permission_classes = [FarmManagerOnlyPermission]
+
     @extend_schema(responses={(200, "text/csv"): OpenApiTypes.BINARY})
     def get(self, request, report_type):
         farm = selected_farm(request)

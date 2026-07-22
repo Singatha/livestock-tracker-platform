@@ -4,6 +4,37 @@ export interface Farm {
   role: 'owner' | 'manager' | 'worker' | 'viewer'
 }
 
+export interface FarmMembership {
+  id: string
+  user: string
+  email: string
+  name: string
+  role: 'owner' | 'manager' | 'worker' | 'viewer'
+  is_active: boolean
+  created_at: string
+}
+
+export interface FarmInvitation {
+  id: string
+  email: string
+  role: FarmMembership['role']
+  token: string
+  status: 'pending' | 'accepted' | 'revoked'
+  expires_at: string
+  is_expired: boolean
+  created_at: string
+}
+
+export interface FarmMembershipAudit {
+  id: string
+  event_type: 'invited' | 'accepted' | 'role_changed' | 'deactivated' | 'reactivated' | 'invitation_revoked'
+  subject_email: string
+  from_role: FarmMembership['role'] | ''
+  to_role: FarmMembership['role'] | ''
+  actor_name: string
+  created_at: string
+}
+
 export interface Paginated<T> {
   count: number
   next: string | null

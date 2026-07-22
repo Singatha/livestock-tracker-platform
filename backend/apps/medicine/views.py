@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.db.models import Count
 from django.utils import timezone
 
+from apps.farms.permissions import FarmManagerRecordPermission
 from apps.farms.viewsets import FarmScopedModelViewSet
 
 from .models import DoseAdministration, MedicineBatch, MedicineProduct, TreatmentCourse
@@ -17,6 +18,7 @@ from .serializers import (
 class MedicineProductViewSet(FarmScopedModelViewSet):
     queryset = MedicineProduct.objects.none()
     serializer_class = MedicineProductSerializer
+    permission_classes = [FarmManagerRecordPermission]
 
     def get_queryset(self):
         return MedicineProduct.objects.filter(farm=self.farm).prefetch_related("batches")
@@ -25,6 +27,7 @@ class MedicineProductViewSet(FarmScopedModelViewSet):
 class MedicineBatchViewSet(FarmScopedModelViewSet):
     queryset = MedicineBatch.objects.none()
     serializer_class = MedicineBatchSerializer
+    permission_classes = [FarmManagerRecordPermission]
 
     def get_queryset(self):
         queryset = MedicineBatch.objects.filter(farm=self.farm).select_related("product")

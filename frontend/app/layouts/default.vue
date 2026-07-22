@@ -21,6 +21,7 @@ const navigation = [
   { label: 'Medicine', to: '/medicine', icon: Pill },
   { label: 'Nutrition', to: '/nutrition', icon: Wheat },
   { label: 'Reports', to: '/reports', icon: BarChart3 },
+  { label: 'Team', to: '/settings/team', icon: Settings },
 ]
 
 function isActive(to: string) {

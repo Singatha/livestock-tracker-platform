@@ -1,0 +1,7 @@
+<script setup lang="ts">
+import { CheckCircle2, Mail } from '@lucide/vue'
+import type { FarmMembership } from '~/types/api'
+const route = useRoute(); const { request } = useApi(); const submitting = ref(false); const accepted = ref(false); const errorMessage = ref('')
+async function accept() { submitting.value = true; errorMessage.value = ''; try { await request<FarmMembership>('/farms/invitations/accept/', { method: 'POST', body: { token: route.params.token as string } }); accepted.value = true } catch { errorMessage.value = 'This invitation is invalid, expired, or belongs to a different email address.' } finally { submitting.value = false } }
+</script>
+<template><section class="auth-card"><span class="mb-6 grid size-12 place-items-center rounded-xl bg-secondary text-primary"><CheckCircle2 v-if="accepted" /><Mail v-else /></span><p class="eyebrow">Farm invitation</p><h1>{{ accepted ? 'Invitation accepted' : 'Join the farm team' }}</h1><p>{{ accepted ? 'You now have access to the farm workspace.' : 'Sign in using the invited email address, then accept this invitation.' }}</p><p v-if="errorMessage" class="error">{{ errorMessage }}</p><Button v-if="!accepted" class="mt-5 w-full" :disabled="submitting" @click="accept">{{ submitting ? 'Accepting…' : 'Accept invitation' }}</Button><Button v-else as-child class="mt-5 w-full"><NuxtLink to="/">Open dashboard</NuxtLink></Button></section></template>

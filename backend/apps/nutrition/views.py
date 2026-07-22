@@ -1,5 +1,6 @@
 from django.db import models
 
+from apps.farms.permissions import FarmManagerRecordPermission
 from apps.farms.viewsets import FarmScopedModelViewSet
 
 from .models import Feed, FeedingPlan
@@ -9,6 +10,7 @@ from .serializers import FeedingPlanSerializer, FeedSerializer
 class FeedViewSet(FarmScopedModelViewSet):
     serializer_class = FeedSerializer
     queryset = Feed.objects.none()
+    permission_classes = [FarmManagerRecordPermission]
 
     def get_queryset(self):
         queryset = Feed.objects.filter(farm=self.farm)
