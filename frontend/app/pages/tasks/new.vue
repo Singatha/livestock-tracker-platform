@@ -8,7 +8,7 @@ const flocks = ref<Flock[]>([])
 const submitting = ref(false)
 const errorMessage = ref('')
 const form = reactive({
-  animal: (route.query.animal as string) || '', flock: '', task_type: 'health_check', title: '', due_date: '', recurrence_days: '', notes: '',
+  animal: (route.query.animal as string) || '', flock: '', task_type: 'health_check', title: '', due_date: '', recurrence_days: '', reminder_days_before: '1', notes: '',
 })
 
 onMounted(async () => {
@@ -32,6 +32,7 @@ async function submit() {
         animal: form.animal || null,
         flock: form.flock || null,
         recurrence_days: form.recurrence_days ? Number(form.recurrence_days) : null,
+        reminder_days_before: Number(form.reminder_days_before),
       },
     })
     await navigateTo(form.animal ? `/animals/${form.animal}` : '/tasks')
@@ -53,6 +54,7 @@ async function submit() {
       <label>Animal <select v-model="form.animal"><option value="">No individual animal</option><option v-for="animal in animals" :key="animal.id" :value="animal.id">{{ animal.ear_tag }} {{ animal.name }}</option></select></label>
       <label>Flock <select v-model="form.flock"><option value="">No flock</option><option v-for="flock in flocks" :key="flock.id" :value="flock.id">{{ flock.name }}</option></select></label>
       <label>Repeat every number of days <input v-model="form.recurrence_days" type="number" min="1" inputmode="numeric"></label>
+      <label>Remind me before <select v-model="form.reminder_days_before"><option value="0">On the due date</option><option value="1">1 day before</option><option value="3">3 days before</option><option value="7">1 week before</option><option value="14">2 weeks before</option><option value="30">1 month before</option></select></label>
       <label class="full">Notes <textarea v-model="form.notes" rows="4" /></label>
       <p v-if="errorMessage" class="error full" role="alert">{{ errorMessage }}</p>
       <div class="actions full"><button type="submit" :disabled="submitting">{{ submitting ? 'Scheduling…' : 'Schedule task' }}</button></div>

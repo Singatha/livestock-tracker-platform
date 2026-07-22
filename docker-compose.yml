@@ -27,11 +27,63 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-livestock}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+      CELERY_BROKER_URL: redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app
+
+  redis:
+    image: redis:8-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+
+  worker:
+    build:
+      context: ./backend
+      target: development
+    command: celery -A config worker --loglevel=info --concurrency=2 --uid=nobody --gid=nogroup
+    environment: &backend-environment
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-unsafe-development-key}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
+      POSTGRES_DB: ${POSTGRES_DB:-livestock_tracker}
+      POSTGRES_USER: ${POSTGRES_USER:-livestock}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-livestock}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      CELERY_BROKER_URL: redis://redis:6379/0
+      DJANGO_EMAIL_BACKEND: ${DJANGO_EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      DJANGO_DEFAULT_FROM_EMAIL: ${DJANGO_DEFAULT_FROM_EMAIL:-Flockwise <noreply@localhost>}
+      DJANGO_EMAIL_HOST: ${DJANGO_EMAIL_HOST:-localhost}
+      DJANGO_EMAIL_PORT: ${DJANGO_EMAIL_PORT:-587}
+      DJANGO_EMAIL_HOST_USER: ${DJANGO_EMAIL_HOST_USER:-}
+      DJANGO_EMAIL_HOST_PASSWORD: ${DJANGO_EMAIL_HOST_PASSWORD:-}
+      DJANGO_EMAIL_USE_TLS: ${DJANGO_EMAIL_USE_TLS:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  beat:
+    build:
+      context: ./backend
+      target: development
+    command: celery -A config beat --loglevel=info --uid=nobody --gid=nogroup --schedule=/tmp/celerybeat-schedule
+    environment: *backend-environment
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./backend:/app
 

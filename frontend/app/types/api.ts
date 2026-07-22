@@ -70,7 +70,19 @@ export interface HusbandryTask {
   due_date: string
   status: 'scheduled' | 'completed' | 'cancelled'
   recurrence_days: number | null
+  reminder_days_before: number
   notes: string
+}
+
+export interface Notification {
+  id: string
+  kind: 'task_due' | 'task_overdue'
+  title: string
+  message: string
+  link: string
+  is_read: boolean
+  read_at: string | null
+  created_at: string
 }
 
 export interface TimelineEvent {

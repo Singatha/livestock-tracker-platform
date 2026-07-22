@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Bell, CalendarCheck2, ChevronDown, LayoutDashboard, Menu, PawPrint, Plus, Settings } from '@lucide/vue'
+import type { Notification, Paginated } from '~/types/api'
 
 const selectedFarmId = useCookie<string | null>('selected-farm-id', {
   default: () => null,
@@ -8,6 +9,9 @@ const selectedFarmId = useCookie<string | null>('selected-farm-id', {
 
 const route = useRoute()
 const mobileOpen = ref(false)
+const notifications = ref<Notification[]>([])
+const { request } = useApi()
+const unreadCount = computed(() => notifications.value.filter(item => !item.is_read).length)
 const navigation = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
   { label: 'Animals', to: '/animals', icon: PawPrint },
@@ -17,6 +21,24 @@ const navigation = [
 function isActive(to: string) {
   return to === '/' ? route.path === '/' : route.path.startsWith(to)
 }
+
+async function loadNotifications() {
+  if (!selectedFarmId.value) return
+  try {
+    notifications.value = (await request<Paginated<Notification>>('/notifications/?unread=true')).results.slice(0, 5)
+  } catch {
+    notifications.value = []
+  }
+}
+
+async function openNotification(notification: Notification) {
+  await request(`/notifications/${notification.id}/mark-read/`, { method: 'POST', body: {} })
+  notifications.value = notifications.value.filter(item => item.id !== notification.id)
+  await navigateTo(notification.link)
+}
+
+onMounted(loadNotifications)
+watch(selectedFarmId, loadNotifications)
 </script>
 
 <template>
@@ -52,7 +74,17 @@ function isActive(to: string) {
         </Sheet>
         <NuxtLink class="ml-2 font-heading font-bold lg:hidden" to="/">Flockwise</NuxtLink>
         <div class="ml-auto flex items-center gap-2">
-          <Button variant="ghost" size="icon" aria-label="Notifications"><Bell /></Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child><Button class="relative" variant="ghost" size="icon" aria-label="Notifications"><Bell /><span v-if="unreadCount" class="absolute right-0.5 top-0.5 grid min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold leading-4 text-white">{{ unreadCount > 9 ? '9+' : unreadCount }}</span></Button></DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-80">
+              <DropdownMenuLabel class="flex items-center justify-between">Notifications <Badge v-if="unreadCount" variant="secondary">{{ unreadCount }} new</Badge></DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem v-for="notification in notifications" :key="notification.id" class="items-start py-3" @select="openNotification(notification)"><span class="grid gap-1"><strong class="text-sm">{{ notification.title }}</strong><small class="text-muted-foreground">{{ notification.message }}</small></span></DropdownMenuItem>
+              <DropdownMenuItem v-if="!notifications.length" disabled class="py-5 text-center">You’re all caught up</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem as-child><NuxtLink class="justify-center font-semibold" to="/notifications">View all notifications</NuxtLink></DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger as-child><Button variant="outline"><span class="hidden sm:inline">Quick add</span><Plus class="sm:hidden" /><ChevronDown class="hidden size-3.5 sm:block" /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end">

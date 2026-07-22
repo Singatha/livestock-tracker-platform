@@ -43,6 +43,7 @@ class HusbandryTask(TimeStampedModel):
     due_date = models.DateField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SCHEDULED)
     recurrence_days = models.PositiveIntegerField(null=True, blank=True)
+    reminder_days_before = models.PositiveSmallIntegerField(default=1)
     notes = models.TextField(blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     completion_notes = models.TextField(blank=True)

@@ -18,6 +18,7 @@ class HusbandryTaskSerializer(serializers.ModelSerializer):
             "due_date",
             "status",
             "recurrence_days",
+            "reminder_days_before",
             "notes",
             "completed_at",
             "completion_notes",

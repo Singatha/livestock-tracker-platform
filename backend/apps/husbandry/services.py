@@ -21,6 +21,10 @@ def complete_task(
         update_fields=["status", "completed_at", "completed_by", "completion_notes", "updated_at"]
     )
 
+    from apps.notifications.models import Notification
+
+    Notification.objects.filter(task=task, read_at__isnull=True).update(read_at=timezone.now())
+
     if task.recurrence_days:
         HusbandryTask.objects.create(
             farm=task.farm,
@@ -30,6 +34,7 @@ def complete_task(
             title=task.title,
             due_date=task.due_date + timedelta(days=task.recurrence_days),
             recurrence_days=task.recurrence_days,
+            reminder_days_before=task.reminder_days_before,
             notes=task.notes,
         )
     return task
