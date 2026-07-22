@@ -17,6 +17,7 @@ from apps.medicine.models import MedicineBatch, TreatmentCourse
 from apps.nutrition.models import Feed
 from apps.reproduction.models import BreedingRecord
 
+from .renderers import CSVRenderer
 from .selectors import filtered_animals, monthly_activity, report_filters, report_summary
 
 
@@ -60,6 +61,7 @@ class ReportsActivityView(APIView):
 
 class ReportsExportView(APIView):
     permission_classes = [FarmManagerOnlyPermission]
+    renderer_classes = [CSVRenderer]
 
     @extend_schema(responses={(200, "text/csv"): OpenApiTypes.BINARY})
     def get(self, request, report_type):

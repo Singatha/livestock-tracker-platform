@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Activity, BarChart3, Bell, CalendarCheck2, ChevronDown, Files, HeartHandshake, LayoutDashboard, Menu, PawPrint, Pill, Plus, Scale, Settings, Upload, Wheat } from '@lucide/vue'
-import type { Notification, Paginated } from '~/types/api'
+import type { Farm, Notification, Paginated } from '~/types/api'
 
 const selectedFarmId = useCookie<string | null>('selected-farm-id', {
   default: () => null,
@@ -10,8 +10,10 @@ const selectedFarmId = useCookie<string | null>('selected-farm-id', {
 const route = useRoute()
 const mobileOpen = ref(false)
 const notifications = ref<Notification[]>([])
+const farms = ref<Farm[]>([])
 const { request } = useApi()
 const unreadCount = computed(() => notifications.value.filter(item => !item.is_read).length)
+const currentFarm = computed(() => farms.value.find(farm => farm.id === selectedFarmId.value))
 const navigation = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
   { label: 'Animals', to: '/animals', icon: PawPrint },
@@ -40,13 +42,29 @@ async function loadNotifications() {
   }
 }
 
+async function loadFarms() {
+  try {
+    farms.value = (await request<Paginated<Farm>>('/farms/')).results
+    if (!currentFarm.value && farms.value[0]) selectedFarmId.value = farms.value[0].id
+  } catch {
+    farms.value = []
+  }
+}
+
+function selectFarm(farmId: string) {
+  selectedFarmId.value = farmId
+}
+
 async function openNotification(notification: Notification) {
   await request(`/notifications/${notification.id}/mark-read/`, { method: 'POST', body: {} })
   notifications.value = notifications.value.filter(item => item.id !== notification.id)
   await navigateTo(notification.link)
 }
 
-onMounted(loadNotifications)
+onMounted(async () => {
+  await loadFarms()
+  await loadNotifications()
+})
 watch(selectedFarmId, loadNotifications)
 </script>
 
@@ -64,8 +82,10 @@ watch(selectedFarmId, loadNotifications)
           </NuxtLink>
         </nav>
         <div class="mt-auto rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs font-semibold text-white/50">Active workspace</p>
-          <p class="mt-1 truncate text-sm font-semibold">{{ selectedFarmId ? 'Farm selected' : 'No farm selected' }}</p>
+          <label for="desktop-farm" class="text-xs font-semibold text-white/50">Active farm</label>
+          <select v-if="farms.length" id="desktop-farm" class="mt-2 h-9 border-white/10 bg-white/5 px-2 text-sm font-semibold text-white shadow-none focus-visible:border-white/30 focus-visible:ring-white/10" :value="selectedFarmId || ''" @change="selectFarm(($event.target as HTMLSelectElement).value)"><option v-for="farm in farms" :key="farm.id" class="bg-sidebar text-white" :value="farm.id">{{ farm.name }}</option></select>
+          <p v-else class="mt-2 truncate text-sm font-semibold">No farm selected</p>
+          <p v-if="currentFarm" class="mt-2 text-xs capitalize text-white/50">{{ currentFarm.role }} access</p>
         </div>
       </div>
     </aside>

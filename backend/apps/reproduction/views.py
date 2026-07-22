@@ -18,6 +18,10 @@ class BreedingRecordViewSet(FarmScopedModelViewSet):
             queryset = queryset.filter(dam_id=animal_id) | queryset.filter(sire_id=animal_id)
         if status:
             queryset = queryset.filter(status=status)
+        if self.request.query_params.get("eligible_for_birth") == "true":
+            queryset = queryset.filter(
+                status__in=[BreedingRecord.Status.EXPOSED, BreedingRecord.Status.CONFIRMED]
+            ).filter(birth_record__isnull=True)
         return queryset
 
     def perform_create(self, serializer):

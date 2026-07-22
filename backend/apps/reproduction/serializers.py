@@ -104,6 +104,11 @@ class BirthRecordSerializer(serializers.ModelSerializer):
     def validate_breeding(self, breeding):
         if breeding.farm_id != self.context["farm"].id:
             raise serializers.ValidationError("Breeding record does not belong to this farm")
+        if breeding.status not in {
+            BreedingRecord.Status.EXPOSED,
+            BreedingRecord.Status.CONFIRMED,
+        }:
+            raise serializers.ValidationError("Births can only be recorded for an open breeding")
         if hasattr(breeding, "birth_record") and (
             self.instance is None or breeding.birth_record != self.instance
         ):

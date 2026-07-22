@@ -78,17 +78,21 @@ async function transferFlock() {
     <div class="form-grid">
       <form class="form-card" @submit.prevent="changeStatus">
         <p class="eyebrow">Current status: {{ animal.status }}</p><h2>Change status</h2>
-        <label>New status <select v-model="statusForm.status"><option value="active">Active</option><option value="sold">Sold</option><option value="missing">Missing</option><option value="deceased">Deceased</option></select></label>
-        <label>Effective date <input v-model="statusForm.effective_date" type="date" required></label>
-        <label>Reason <textarea v-model="statusForm.reason" rows="3" maxlength="250" required /></label>
-        <button type="submit" :disabled="submitting || statusForm.status === animal.status">Update status</button>
+        <div class="mt-6 grid gap-5">
+          <label>New status <select v-model="statusForm.status"><option value="active">Active</option><option value="sold">Sold</option><option value="missing">Missing</option><option value="deceased">Deceased</option></select></label>
+          <label>Effective date <input v-model="statusForm.effective_date" type="date" required></label>
+          <label>Reason <textarea v-model="statusForm.reason" rows="3" maxlength="250" required /></label>
+          <button class="justify-self-start" type="submit" :disabled="submitting || statusForm.status === animal.status">Update status</button>
+        </div>
       </form>
       <form class="form-card" @submit.prevent="transferFlock">
         <p class="eyebrow">Flock assignment</p><h2>Transfer flock</h2>
-        <label>Destination <select v-model="transferForm.flock"><option value="">No flock</option><option v-for="flock in flocks" :key="flock.id" :value="flock.id">{{ flock.name }}</option></select></label>
-        <label>Effective date <input v-model="transferForm.effective_date" type="date" required></label>
-        <label>Reason <textarea v-model="transferForm.reason" rows="3" maxlength="250" /></label>
-        <button type="submit" :disabled="submitting || animal.status !== 'active' || transferForm.flock === (animal.flock || '')">Transfer animal</button>
+        <div class="mt-6 grid gap-5">
+          <label>Destination <select v-model="transferForm.flock"><option value="">No flock</option><option v-for="flock in flocks" :key="flock.id" :value="flock.id">{{ flock.name }}</option></select></label>
+          <label>Effective date <input v-model="transferForm.effective_date" type="date" required></label>
+          <label>Reason <textarea v-model="transferForm.reason" rows="3" maxlength="250" /></label>
+          <button class="justify-self-start" type="submit" :disabled="submitting || animal.status !== 'active' || transferForm.flock === (animal.flock || '')">Transfer animal</button>
+        </div>
       </form>
     </div>
     <section class="timeline-section">

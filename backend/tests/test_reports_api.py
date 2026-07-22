@@ -59,6 +59,20 @@ def test_animal_csv_honors_species_filter(api_client, farm):
     assert b"G-CSV" not in response.content
 
 
+def test_csv_export_accepts_browser_csv_media_type(api_client, farm):
+    Animal.objects.create(farm=farm, ear_tag="CSV-ACCEPT", species="sheep")
+
+    response = api_client.get(
+        "/api/v1/reports/export/animals/?species=sheep",
+        HTTP_ACCEPT="text/csv",
+        **farm_headers(farm),
+    )
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "text/csv"
+    assert b"CSV-ACCEPT" in response.content
+
+
 def test_activity_endpoint_returns_monthly_series(api_client, farm):
     Animal.objects.create(farm=farm, ear_tag="TREND-1", species="goat")
 

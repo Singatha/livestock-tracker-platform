@@ -101,3 +101,62 @@ def test_birth_counts_must_balance(api_client, farm, user):
         **headers(farm),
     )
     assert response.status_code == 400
+
+
+def test_eligible_birth_filter_only_returns_open_breedings(api_client, farm, user):
+    dam = Animal.objects.create(
+        farm=farm, ear_tag="EWE-OPEN", species="sheep", sex=Animal.Sex.FEMALE
+    )
+    open_record = BreedingRecord.objects.create(
+        farm=farm,
+        dam=dam,
+        breeding_date=date.today(),
+        expected_birth_date=date.today(),
+        status=BreedingRecord.Status.CONFIRMED,
+        recorded_by=user,
+    )
+    BreedingRecord.objects.create(
+        farm=farm,
+        dam=dam,
+        breeding_date=date.today(),
+        expected_birth_date=date.today(),
+        status=BreedingRecord.Status.NOT_PREGNANT,
+        recorded_by=user,
+    )
+
+    response = api_client.get(
+        "/api/v1/reproduction/breedings/?eligible_for_birth=true", **headers(farm)
+    )
+
+    assert response.status_code == 200
+    assert [item["id"] for item in response.data["results"]] == [str(open_record.id)]
+
+
+def test_birth_rejects_closed_breeding(api_client, farm, user):
+    dam = Animal.objects.create(
+        farm=farm, ear_tag="EWE-CLOSED", species="sheep", sex=Animal.Sex.FEMALE
+    )
+    breeding = BreedingRecord.objects.create(
+        farm=farm,
+        dam=dam,
+        breeding_date=date.today(),
+        expected_birth_date=date.today(),
+        status=BreedingRecord.Status.NOT_PREGNANT,
+        recorded_by=user,
+    )
+
+    response = api_client.post(
+        "/api/v1/reproduction/births/",
+        {
+            "breeding": str(breeding.id),
+            "birth_date": date.today().isoformat(),
+            "total_born": 1,
+            "born_alive": 1,
+            "stillborn": 0,
+        },
+        format="json",
+        **headers(farm),
+    )
+
+    assert response.status_code == 400
+    assert "breeding" in response.data

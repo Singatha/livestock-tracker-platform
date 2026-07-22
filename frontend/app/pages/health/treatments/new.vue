@@ -9,6 +9,7 @@ const errorMessage = ref('')
 const form = reactive({
   animal: (route.query.animal as string) || '', product: '', dosage: '', route: 'other', reason: '', withdrawal_end_date: '', follow_up_date: '', notes: '',
 })
+const cancelTo = computed(() => form.animal ? `/animals/${form.animal}` : '/animals')
 
 onMounted(async () => {
   if (!selectedFarmId.value) return
@@ -46,7 +47,7 @@ async function submit() {
       <label>Follow-up date <input v-model="form.follow_up_date" type="date"></label>
       <label class="full">Notes <textarea v-model="form.notes" rows="4" /></label>
       <p v-if="errorMessage" class="error full" role="alert">{{ errorMessage }}</p>
-      <div class="actions full"><button type="submit" :disabled="submitting">{{ submitting ? 'Saving…' : 'Save treatment' }}</button></div>
+      <div class="actions full"><Button as-child variant="ghost"><NuxtLink :to="cancelTo">Cancel</NuxtLink></Button><button type="submit" :disabled="submitting">{{ submitting ? 'Saving…' : 'Save treatment' }}</button></div>
     </form>
   </section>
 </template>
