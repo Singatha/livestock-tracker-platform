@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bell, CalendarCheck2, ChevronDown, LayoutDashboard, Menu, PawPrint, Plus, Settings, Wheat } from '@lucide/vue'
+import { BarChart3, Bell, CalendarCheck2, ChevronDown, LayoutDashboard, Menu, PawPrint, Plus, Settings, Wheat } from '@lucide/vue'
 import type { Notification, Paginated } from '~/types/api'
 
 const selectedFarmId = useCookie<string | null>('selected-farm-id', {
@@ -17,6 +17,7 @@ const navigation = [
   { label: 'Animals', to: '/animals', icon: PawPrint },
   { label: 'Tasks', to: '/tasks', icon: CalendarCheck2 },
   { label: 'Nutrition', to: '/nutrition', icon: Wheat },
+  { label: 'Reports', to: '/reports', icon: BarChart3 },
 ]
 
 function isActive(to: string) {

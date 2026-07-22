@@ -121,6 +121,26 @@ export interface FeedingPlan {
   compatibility_warnings: string[]
 }
 
+export interface ReportSummary {
+  animals: number
+  active_animals: number
+  needs_attention: number
+  health_observations: number
+  open_health_concerns: number
+  treatments: number
+  completed_tasks: number
+  overdue_tasks: number
+  low_stock_feeds: number
+  inventory_value: string
+}
+
+export interface MonthlyActivity {
+  month: string
+  animals_registered: number
+  health_observations: number
+  tasks_completed: number
+}
+
 export interface TimelineEvent {
   id: string
   kind: 'observation' | 'treatment' | 'task'

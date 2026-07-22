@@ -43,5 +43,21 @@ export function useApi() {
     })
   }
 
-  return { request, resetCsrfToken, selectedFarmId }
+  async function download(path: string, filename: string): Promise<void> {
+    const headers = new Headers({ Accept: 'text/csv' })
+    if (selectedFarmId.value) headers.set('X-Farm-ID', selectedFarmId.value)
+    const response = await fetch(`${config.public.apiBase}${path}`, {
+      headers,
+      credentials: 'include',
+    })
+    if (!response.ok) throw new Error('Download failed')
+    const url = URL.createObjectURL(await response.blob())
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return { download, request, resetCsrfToken, selectedFarmId }
 }
