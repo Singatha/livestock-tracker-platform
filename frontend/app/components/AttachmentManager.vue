@@ -87,16 +87,15 @@ watch(selectedFarmId, load)
 
 <template>
   <div class="grid gap-6 xl:grid-cols-[1fr_1.35fr]">
-    <form class="form-card" @submit.prevent="uploadFile">
-      <p class="eyebrow">Private farm storage</p><h2>Upload file</h2>
-      <label>File <input ref="fileInput" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.csv" required @change="fileChanged"></label>
-      <label>Category <select v-model="form.category"><option v-for="category in categories" :key="category[0]" :value="category[0]">{{ category[1] }}</option></select></label>
-      <label v-if="!animalId">Animal (optional) <select v-model="form.animal"><option value="">Farm-wide document</option><option v-for="animal in animals" :key="animal.id" :value="animal.id">{{ animal.ear_tag }} · {{ animal.name || animal.species }}</option></select></label>
-      <label>Title <input v-model="form.title" maxlength="200" required></label>
-      <label>Description <textarea v-model="form.description" rows="3" /></label>
-      <p v-if="successMessage" class="success" role="status">{{ successMessage }}</p><p v-if="errorMessage" class="error" role="alert">{{ errorMessage }}</p>
-      <Button type="submit" :disabled="submitting || !selectedFile"><Upload /> {{ submitting ? 'Uploading…' : 'Upload securely' }}</Button>
-    </form>
+    <Card><CardHeader><p class="eyebrow">Private farm storage</p><CardTitle>Upload file</CardTitle><CardDescription>Add a photo or supporting document up to 10 MB.</CardDescription></CardHeader><CardContent><form class="stack" @submit.prevent="uploadFile">
+        <label>File <input ref="fileInput" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.csv" required @change="fileChanged"></label>
+        <label>Category <select v-model="form.category"><option v-for="category in categories" :key="category[0]" :value="category[0]">{{ category[1] }}</option></select></label>
+        <label v-if="!animalId">Animal (optional) <select v-model="form.animal"><option value="">Farm-wide document</option><option v-for="animal in animals" :key="animal.id" :value="animal.id">{{ animal.ear_tag }} · {{ animal.name || animal.species }}</option></select></label>
+        <label>Title <input v-model="form.title" maxlength="200" required></label>
+        <label>Description <textarea v-model="form.description" rows="3" /></label>
+        <p v-if="successMessage" class="success" role="status">{{ successMessage }}</p><p v-if="errorMessage" class="error" role="alert">{{ errorMessage }}</p>
+        <Button type="submit" :disabled="submitting || !selectedFile"><Upload /> {{ submitting ? 'Uploading…' : 'Upload securely' }}</Button>
+      </form></CardContent></Card>
     <Card><CardHeader><CardTitle>Files</CardTitle><CardDescription>Downloads require an active membership in the selected farm.</CardDescription></CardHeader><CardContent>
       <div v-if="loading" class="grid gap-3"><Skeleton v-for="item in 4" :key="item" class="h-16" /></div>
       <div v-for="item in attachments" v-else :key="item.id" class="flex items-center gap-3 border-b py-3 last:border-0">
