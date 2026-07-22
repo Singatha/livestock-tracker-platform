@@ -21,6 +21,29 @@ export interface DashboardSummary {
   due_next_7_days: number
   expected_births_next_30_days: number
   overdue_expected_births: number
+  animals_losing_weight: number
+}
+
+export interface WeightMeasurement {
+  id: string
+  animal: string
+  animal_ear_tag: string
+  measured_on: string
+  weight_kg: string
+  body_condition_score: string | null
+  notes: string
+}
+
+export interface AnimalGrowthSummary {
+  animal: string
+  ear_tag: string
+  name: string
+  flock_name: string | null
+  latest_weight_kg: string
+  latest_measured_on: string
+  previous_weight_kg: string | null
+  change_kg: string | null
+  average_daily_gain_kg: string | null
 }
 
 export interface Flock {
@@ -163,7 +186,7 @@ export interface MonthlyActivity {
 
 export interface TimelineEvent {
   id: string
-  kind: 'observation' | 'treatment' | 'task' | 'lifecycle' | 'reproduction'
+  kind: 'observation' | 'treatment' | 'task' | 'lifecycle' | 'reproduction' | 'growth'
   date: string
   title: string
   details: string

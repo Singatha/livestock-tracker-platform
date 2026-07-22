@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "apps.health",
     "apps.husbandry",
     "apps.reproduction",
+    "apps.growth",
     "apps.notifications",
     "apps.nutrition",
     "apps.reports",

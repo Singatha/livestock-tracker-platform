@@ -27,6 +27,7 @@ onMounted(async () => {
       <div class="actions wrap">
         <NuxtLink class="secondary-link" :to="`/animals/${animal.id}/edit`">Edit details</NuxtLink>
         <NuxtLink class="secondary-link" :to="`/animals/${animal.id}/lifecycle`">Manage lifecycle</NuxtLink>
+        <NuxtLink class="secondary-link" :to="`/growth/new?animal=${animal.id}`">Record weight</NuxtLink>
         <NuxtLink class="secondary-link" :to="`/health/observations/new?animal=${animal.id}`">Record observation</NuxtLink>
         <NuxtLink class="secondary-link" :to="`/health/treatments/new?animal=${animal.id}`">Record treatment</NuxtLink>
         <NuxtLink class="button-link" :to="`/tasks/new?animal=${animal.id}`">Schedule task</NuxtLink>

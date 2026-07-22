@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BarChart3, Bell, CalendarCheck2, ChevronDown, HeartHandshake, LayoutDashboard, Menu, PawPrint, Plus, Settings, Wheat } from '@lucide/vue'
+import { BarChart3, Bell, CalendarCheck2, ChevronDown, HeartHandshake, LayoutDashboard, Menu, PawPrint, Plus, Scale, Settings, Wheat } from '@lucide/vue'
 import type { Notification, Paginated } from '~/types/api'
 
 const selectedFarmId = useCookie<string | null>('selected-farm-id', {
@@ -17,6 +17,7 @@ const navigation = [
   { label: 'Animals', to: '/animals', icon: PawPrint },
   { label: 'Tasks', to: '/tasks', icon: CalendarCheck2 },
   { label: 'Breeding', to: '/reproduction', icon: HeartHandshake },
+  { label: 'Growth', to: '/growth', icon: Scale },
   { label: 'Nutrition', to: '/nutrition', icon: Wheat },
   { label: 'Reports', to: '/reports', icon: BarChart3 },
 ]
@@ -95,6 +96,7 @@ watch(selectedFarmId, loadNotifications)
               <DropdownMenuItem as-child><NuxtLink to="/flocks/new">Create flock</NuxtLink></DropdownMenuItem>
               <DropdownMenuItem as-child><NuxtLink to="/tasks/new">Schedule task</NuxtLink></DropdownMenuItem>
               <DropdownMenuItem as-child><NuxtLink to="/reproduction/breedings/new">Record breeding</NuxtLink></DropdownMenuItem>
+              <DropdownMenuItem as-child><NuxtLink to="/growth/new">Record weight</NuxtLink></DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem as-child><NuxtLink to="/farms/new"><Settings /> Create farm</NuxtLink></DropdownMenuItem>
             </DropdownMenuContent>

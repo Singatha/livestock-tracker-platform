@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertTriangle, Beef, CalendarClock, ClipboardPlus, HeartHandshake, HeartPulse, PawPrint, Plus } from '@lucide/vue'
+import { AlertTriangle, Beef, CalendarClock, ClipboardPlus, HeartHandshake, HeartPulse, PawPrint, Plus, Scale } from '@lucide/vue'
 import type { DashboardSummary, Farm, Paginated } from '~/types/api'
 
 const { request, selectedFarmId } = useApi()
@@ -48,6 +48,7 @@ onMounted(async () => {
         <MetricCard label="Sheep" :value="summary.sheep" :icon="Beef" />
         <MetricCard label="Need attention" :value="summary.needs_attention" :icon="AlertTriangle" tone="warning" hint="Review health status" />
         <MetricCard label="Overdue tasks" :value="summary.overdue_tasks" :icon="CalendarClock" tone="danger" hint="Action required" />
+        <MetricCard label="Losing weight" :value="summary.animals_losing_weight" :icon="Scale" :tone="summary.animals_losing_weight ? 'warning' : 'default'" hint="Compared with previous measurement" />
       </div>
       <div class="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <Card>
@@ -66,6 +67,7 @@ onMounted(async () => {
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/flocks/new"><Beef /> Create a flock</NuxtLink></Button>
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/animals/new"><Plus /> Register an animal</NuxtLink></Button>
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/reproduction/breedings/new"><HeartHandshake /> Record breeding</NuxtLink></Button>
+            <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/growth/new"><Scale /> Record weight</NuxtLink></Button>
           </CardContent>
         </Card>
       </div>

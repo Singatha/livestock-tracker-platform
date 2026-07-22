@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.farms.permissions import selected_farm
+from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation
 from apps.husbandry.models import HusbandryTask
 from apps.nutrition.models import Feed
@@ -148,6 +149,33 @@ class ReportsExportView(APIView):
                     item.unit,
                     item.reorder_level,
                     item.unit_cost or "",
+                )
+                for item in rows
+            )
+        elif report_type == "weights":
+            writer.writerow(
+                ["Date", "Ear tag", "Animal", "Flock", "Weight kg", "Body condition", "Notes"]
+            )
+            rows = WeightMeasurement.objects.filter(farm=farm).select_related(
+                "animal", "animal__flock"
+            )
+            if filters["date_from"]:
+                rows = rows.filter(measured_on__gte=filters["date_from"])
+            if filters["date_to"]:
+                rows = rows.filter(measured_on__lte=filters["date_to"])
+            if filters["flock"]:
+                rows = rows.filter(animal__flock_id=filters["flock"])
+            if filters["species"]:
+                rows = rows.filter(animal__species=filters["species"])
+            writer.writerows(
+                (
+                    item.measured_on,
+                    item.animal.ear_tag,
+                    item.animal.name,
+                    item.animal.flock.name if item.animal.flock else "",
+                    item.weight_kg,
+                    item.body_condition_score or "",
+                    item.notes,
                 )
                 for item in rows
             )

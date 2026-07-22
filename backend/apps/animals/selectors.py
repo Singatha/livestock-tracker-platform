@@ -1,3 +1,4 @@
+from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation, Treatment
 from apps.husbandry.models import HusbandryTask
 from apps.reproduction.models import BirthRecord, BreedingRecord
@@ -84,6 +85,21 @@ def animal_timeline(*, animal: Animal) -> list[dict]:
                 "title": "Birth recorded",
                 "details": f"{birth.born_alive} born alive, {birth.stillborn} stillborn",
                 "status": "completed",
+            }
+        )
+    for measurement in WeightMeasurement.objects.filter(animal=animal):
+        events.append(
+            {
+                "id": str(measurement.id),
+                "kind": "growth",
+                "date": measurement.measured_on.isoformat(),
+                "title": f"Weight recorded: {measurement.weight_kg} kg",
+                "details": (
+                    f"Body condition score {measurement.body_condition_score}"
+                    if measurement.body_condition_score is not None
+                    else measurement.notes
+                ),
+                "status": "recorded",
             }
         )
     return sorted(events, key=lambda event: event["date"], reverse=True)
