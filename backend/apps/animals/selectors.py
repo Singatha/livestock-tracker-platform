@@ -1,5 +1,6 @@
 from apps.health.models import HealthObservation, Treatment
 from apps.husbandry.models import HusbandryTask
+from apps.reproduction.models import BirthRecord, BreedingRecord
 
 from .models import Animal, AnimalLifecycleEvent
 
@@ -61,6 +62,28 @@ def animal_timeline(*, animal: Animal) -> list[dict]:
                 "title": lifecycle.get_event_type_display(),
                 "details": details,
                 "status": lifecycle.to_status or "recorded",
+            }
+        )
+    for breeding in BreedingRecord.objects.filter(dam=animal):
+        events.append(
+            {
+                "id": str(breeding.id),
+                "kind": "reproduction",
+                "date": breeding.breeding_date.isoformat(),
+                "title": "Breeding recorded",
+                "details": f"Expected birth {breeding.expected_birth_date.isoformat()}",
+                "status": breeding.status,
+            }
+        )
+    for birth in BirthRecord.objects.filter(dam=animal):
+        events.append(
+            {
+                "id": str(birth.id),
+                "kind": "reproduction",
+                "date": birth.birth_date.isoformat(),
+                "title": "Birth recorded",
+                "details": f"{birth.born_alive} born alive, {birth.stillborn} stillborn",
+                "status": "completed",
             }
         )
     return sorted(events, key=lambda event: event["date"], reverse=True)

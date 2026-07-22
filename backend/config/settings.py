@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "apps.animals",
     "apps.health",
     "apps.husbandry",
+    "apps.reproduction",
     "apps.notifications",
     "apps.nutrition",
     "apps.reports",

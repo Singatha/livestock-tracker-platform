@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertTriangle, Beef, CalendarClock, ClipboardPlus, HeartPulse, PawPrint, Plus } from '@lucide/vue'
+import { AlertTriangle, Beef, CalendarClock, ClipboardPlus, HeartHandshake, HeartPulse, PawPrint, Plus } from '@lucide/vue'
 import type { DashboardSummary, Farm, Paginated } from '~/types/api'
 
 const { request, selectedFarmId } = useApi()
@@ -55,6 +55,8 @@ onMounted(async () => {
           <CardContent class="grid gap-3 sm:grid-cols-2">
             <NuxtLink to="/animals" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-red-50 text-destructive"><HeartPulse /></span><span><strong class="block text-2xl">{{ summary.open_health_concerns }}</strong><small class="text-muted-foreground">Open health concerns</small></span></NuxtLink>
             <NuxtLink to="/tasks" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-secondary text-primary"><CalendarClock /></span><span><strong class="block text-2xl">{{ summary.due_next_7_days }}</strong><small class="text-muted-foreground">Due in the next 7 days</small></span></NuxtLink>
+            <NuxtLink to="/reproduction" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-pink-50 text-pink-700"><HeartHandshake /></span><span><strong class="block text-2xl">{{ summary.expected_births_next_30_days }}</strong><small class="text-muted-foreground">Births expected in 30 days</small></span></NuxtLink>
+            <NuxtLink to="/reproduction" class="flex items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/60"><span class="grid size-10 place-items-center rounded-lg bg-amber-50 text-amber-700"><AlertTriangle /></span><span><strong class="block text-2xl">{{ summary.overdue_expected_births }}</strong><small class="text-muted-foreground">Expected births overdue</small></span></NuxtLink>
           </CardContent>
         </Card>
         <Card>
@@ -63,6 +65,7 @@ onMounted(async () => {
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/tasks/new"><ClipboardPlus /> Schedule care task</NuxtLink></Button>
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/flocks/new"><Beef /> Create a flock</NuxtLink></Button>
             <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/animals/new"><Plus /> Register an animal</NuxtLink></Button>
+            <Button as-child variant="outline" class="h-11 justify-start"><NuxtLink to="/reproduction/breedings/new"><HeartHandshake /> Record breeding</NuxtLink></Button>
           </CardContent>
         </Card>
       </div>

@@ -11,6 +11,7 @@ from apps.animals.models import Animal
 from apps.farms.permissions import selected_farm
 from apps.health.models import HealthObservation
 from apps.husbandry.models import HusbandryTask
+from apps.reproduction.models import BreedingRecord
 
 
 class DashboardSummarySerializer(serializers.Serializer):
@@ -21,6 +22,8 @@ class DashboardSummarySerializer(serializers.Serializer):
     open_health_concerns = serializers.IntegerField()
     overdue_tasks = serializers.IntegerField()
     due_next_7_days = serializers.IntegerField()
+    expected_births_next_30_days = serializers.IntegerField()
+    overdue_expected_births = serializers.IntegerField()
 
 
 class DashboardSummaryView(APIView):
@@ -49,6 +52,16 @@ class DashboardSummaryView(APIView):
                 farm=farm,
                 status=HusbandryTask.Status.SCHEDULED,
                 due_date__range=(today, today + timedelta(days=7)),
+            ).count(),
+            expected_births_next_30_days=BreedingRecord.objects.filter(
+                farm=farm,
+                status=BreedingRecord.Status.CONFIRMED,
+                expected_birth_date__range=(today, today + timedelta(days=30)),
+            ).count(),
+            overdue_expected_births=BreedingRecord.objects.filter(
+                farm=farm,
+                status=BreedingRecord.Status.CONFIRMED,
+                expected_birth_date__lt=today,
             ).count(),
         )
         return Response(summary)

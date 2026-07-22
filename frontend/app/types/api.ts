@@ -19,6 +19,8 @@ export interface DashboardSummary {
   open_health_concerns: number
   overdue_tasks: number
   due_next_7_days: number
+  expected_births_next_30_days: number
+  overdue_expected_births: number
 }
 
 export interface Flock {
@@ -161,9 +163,35 @@ export interface MonthlyActivity {
 
 export interface TimelineEvent {
   id: string
-  kind: 'observation' | 'treatment' | 'task' | 'lifecycle'
+  kind: 'observation' | 'treatment' | 'task' | 'lifecycle' | 'reproduction'
   date: string
   title: string
   details: string
   status: string
+}
+
+export interface BreedingRecord {
+  id: string
+  dam: string
+  dam_name: string
+  sire: string | null
+  sire_name: string | null
+  breeding_date: string
+  expected_birth_date: string
+  method: 'natural' | 'artificial' | 'unknown'
+  status: 'exposed' | 'confirmed' | 'not_pregnant' | 'completed'
+  pregnancy_checked_on: string | null
+  notes: string
+}
+
+export interface BirthRecord {
+  id: string
+  breeding: string
+  dam: string
+  dam_name: string
+  birth_date: string
+  total_born: number
+  born_alive: number
+  stillborn: number
+  notes: string
 }
