@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Animal, AnimalLifecycleEvent, Flock, Paginated } from '~/types/api'
+import type { Animal, AnimalLifecycleEvent, AuditEvent, Flock, Paginated } from '~/types/api'
 
 const route = useRoute()
 const animalId = route.params.id as string
@@ -7,6 +7,7 @@ const { request } = useApi()
 const animal = ref<Animal | null>(null)
 const flocks = ref<Flock[]>([])
 const events = ref<AnimalLifecycleEvent[]>([])
+const auditEvents = ref<AuditEvent[]>([])
 const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -24,6 +25,11 @@ async function load() {
   flocks.value = flockResponse.results
   events.value = eventResponse
   transferForm.flock = animalResponse.flock || ''
+  try {
+    auditEvents.value = (await request<Paginated<AuditEvent>>(`/audit/?animal=${animalId}`)).results
+  } catch {
+    auditEvents.value = []
+  }
 }
 
 onMounted(async () => {
@@ -92,6 +98,7 @@ async function transferFlock() {
       </ol>
       <p v-else class="empty-row">No lifecycle events recorded.</p>
     </section>
+    <Card v-if="auditEvents.length" class="mt-6"><CardHeader><CardTitle>Record activity</CardTitle><CardDescription>Changes to this animal and its directly related care records.</CardDescription></CardHeader><CardContent><div v-for="event in auditEvents" :key="event.id" class="flex flex-wrap items-center justify-between gap-2 border-b py-3 last:border-0"><span><strong class="block">{{ event.actor_name }} {{ event.action }} {{ event.resource_type.toLowerCase() }}</strong><small class="text-muted-foreground">{{ event.resource_name }}</small></span><time class="text-xs text-muted-foreground">{{ new Date(event.created_at).toLocaleString() }}</time></div></CardContent></Card>
   </section>
   <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
 </template>

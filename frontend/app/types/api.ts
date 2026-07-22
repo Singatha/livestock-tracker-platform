@@ -55,6 +55,18 @@ export interface ImportJob {
   completed_at: string | null
 }
 
+export interface AuditEvent {
+  id: string
+  action: 'created' | 'updated' | 'deleted'
+  resource_type: string
+  resource_id: string
+  resource_name: string
+  animal_id: string | null
+  changes: Record<string, unknown>
+  actor_name: string
+  created_at: string
+}
+
 export interface Paginated<T> {
   count: number
   next: string | null

@@ -8,12 +8,14 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.audit.models import AuditEvent
 from apps.farms.permissions import FarmManagerOnlyPermission, selected_farm
 from apps.growth.models import WeightMeasurement
 from apps.health.models import HealthObservation
 from apps.husbandry.models import HusbandryTask
-from apps.medicine.models import MedicineBatch
+from apps.medicine.models import MedicineBatch, TreatmentCourse
 from apps.nutrition.models import Feed
+from apps.reproduction.models import BreedingRecord
 
 from .selectors import filtered_animals, monthly_activity, report_filters, report_summary
 
@@ -197,6 +199,104 @@ class ReportsExportView(APIView):
                     item.expiry_date,
                     item.quantity_on_hand,
                     item.product.stock_unit,
+                )
+                for item in rows
+            )
+        elif report_type == "reproduction":
+            writer.writerow(
+                [
+                    "Breeding date",
+                    "Dam",
+                    "Sire",
+                    "Method",
+                    "Status",
+                    "Expected birth",
+                    "Birth date",
+                    "Born alive",
+                    "Stillborn",
+                ]
+            )
+            rows = BreedingRecord.objects.filter(farm=farm).select_related(
+                "dam", "sire", "birth_record"
+            )
+            if filters["date_from"]:
+                rows = rows.filter(breeding_date__gte=filters["date_from"])
+            if filters["date_to"]:
+                rows = rows.filter(breeding_date__lte=filters["date_to"])
+            if filters["flock"]:
+                rows = rows.filter(dam__flock_id=filters["flock"])
+            if filters["species"]:
+                rows = rows.filter(dam__species=filters["species"])
+            writer.writerows(
+                (
+                    item.breeding_date,
+                    item.dam.ear_tag,
+                    item.sire.ear_tag if item.sire else "",
+                    item.method,
+                    item.status,
+                    item.expected_birth_date,
+                    item.birth_record.birth_date if hasattr(item, "birth_record") else "",
+                    item.birth_record.born_alive if hasattr(item, "birth_record") else "",
+                    item.birth_record.stillborn if hasattr(item, "birth_record") else "",
+                )
+                for item in rows
+            )
+        elif report_type == "treatment-courses":
+            writer.writerow(
+                [
+                    "Started",
+                    "Ear tag",
+                    "Product",
+                    "Reason",
+                    "Dosage",
+                    "Route",
+                    "Status",
+                    "Meat withdrawal ends",
+                    "Milk withdrawal ends",
+                ]
+            )
+            rows = TreatmentCourse.objects.filter(farm=farm).select_related("animal", "product")
+            if filters["date_from"]:
+                rows = rows.filter(started_on__gte=filters["date_from"])
+            if filters["date_to"]:
+                rows = rows.filter(started_on__lte=filters["date_to"])
+            if filters["flock"]:
+                rows = rows.filter(animal__flock_id=filters["flock"])
+            if filters["species"]:
+                rows = rows.filter(animal__species=filters["species"])
+            writer.writerows(
+                (
+                    item.started_on,
+                    item.animal.ear_tag,
+                    item.product.name,
+                    item.reason,
+                    item.dosage,
+                    item.route,
+                    item.status,
+                    item.meat_withdrawal_end_date or "",
+                    item.milk_withdrawal_end_date or "",
+                )
+                for item in rows
+            )
+        elif report_type == "audit":
+            writer.writerow(
+                ["Timestamp", "Actor", "Action", "Resource type", "Resource", "Resource ID"]
+            )
+            rows = AuditEvent.objects.filter(farm=farm).select_related("actor")
+            if filters["date_from"]:
+                rows = rows.filter(created_at__date__gte=filters["date_from"])
+            if filters["date_to"]:
+                rows = rows.filter(created_at__date__lte=filters["date_to"])
+            writer.writerows(
+                (
+                    item.created_at.isoformat(),
+                    (item.actor.get_full_name() or item.actor.email or item.actor.username)
+                    if item.actor
+                    else "Former user",
+                    item.action,
+                    item.resource_type,
+                    item.resource_name,
+                    item.resource_id,
                 )
                 for item in rows
             )
