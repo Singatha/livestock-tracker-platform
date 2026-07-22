@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from apps.common.models import TimeStampedModel
@@ -61,3 +62,46 @@ class Animal(TimeStampedModel):
 
     def __str__(self) -> str:
         return self.ear_tag
+
+
+class AnimalLifecycleEvent(TimeStampedModel):
+    class EventType(models.TextChoices):
+        REGISTERED = "registered", "Registered"
+        STATUS_CHANGED = "status_changed", "Status changed"
+        FLOCK_TRANSFERRED = "flock_transferred", "Flock transferred"
+
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name="lifecycle_events")
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name="animal_lifecycle_events")
+    event_type = models.CharField(max_length=30, choices=EventType.choices)
+    effective_date = models.DateField()
+    from_status = models.CharField(max_length=20, choices=Animal.Status.choices, blank=True)
+    to_status = models.CharField(max_length=20, choices=Animal.Status.choices, blank=True)
+    from_flock = models.ForeignKey(
+        Flock,
+        on_delete=models.SET_NULL,
+        related_name="lifecycle_events_from",
+        null=True,
+        blank=True,
+    )
+    to_flock = models.ForeignKey(
+        Flock,
+        on_delete=models.SET_NULL,
+        related_name="lifecycle_events_to",
+        null=True,
+        blank=True,
+    )
+    reason = models.CharField(max_length=250, blank=True)
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="recorded_animal_lifecycle_events",
+    )
+
+    class Meta:
+        ordering = ["-effective_date", "-created_at"]
+        indexes = [
+            models.Index(
+                fields=["farm", "event_type", "effective_date"],
+                name="animals_ani_farm_id_6c53ca_idx",
+            )
+        ]

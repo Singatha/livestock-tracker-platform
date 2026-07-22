@@ -25,6 +25,8 @@ onMounted(async () => {
     <div class="page-heading">
       <div><p class="eyebrow">{{ animal.species }}</p><h1>{{ animal.name || animal.ear_tag }}</h1><p>Ear tag {{ animal.ear_tag }} · {{ animal.breed || 'Breed not recorded' }}</p></div>
       <div class="actions wrap">
+        <NuxtLink class="secondary-link" :to="`/animals/${animal.id}/edit`">Edit details</NuxtLink>
+        <NuxtLink class="secondary-link" :to="`/animals/${animal.id}/lifecycle`">Manage lifecycle</NuxtLink>
         <NuxtLink class="secondary-link" :to="`/health/observations/new?animal=${animal.id}`">Record observation</NuxtLink>
         <NuxtLink class="secondary-link" :to="`/health/treatments/new?animal=${animal.id}`">Record treatment</NuxtLink>
         <NuxtLink class="button-link" :to="`/tasks/new?animal=${animal.id}`">Schedule task</NuxtLink>
@@ -34,6 +36,7 @@ onMounted(async () => {
       <article><span>Status</span><strong>{{ animal.status }}</strong></article>
       <article><span>Sex</span><strong>{{ animal.sex }}</strong></article>
       <article><span>Attention</span><strong>{{ animal.needs_attention ? 'Required' : 'No flag' }}</strong></article>
+      <article><span>Date of birth</span><strong>{{ animal.date_of_birth ? new Date(animal.date_of_birth).toLocaleDateString() : 'Not recorded' }}</strong></article>
     </div>
     <section class="timeline-section">
       <h2>History and upcoming work</h2>
@@ -43,7 +46,7 @@ onMounted(async () => {
           <div><p class="timeline-meta">{{ event.kind }} · {{ new Date(event.date).toLocaleDateString() }} · {{ event.status }}</p><h3>{{ event.title }}</h3><p v-if="event.details">{{ event.details }}</p></div>
         </li>
       </ol>
-      <p v-else class="empty-row">No health records or tasks yet.</p>
+      <p v-else class="empty-row">No history or upcoming work yet.</p>
     </section>
   </section>
   <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>

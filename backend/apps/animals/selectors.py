@@ -1,7 +1,7 @@
 from apps.health.models import HealthObservation, Treatment
 from apps.husbandry.models import HusbandryTask
 
-from .models import Animal
+from .models import Animal, AnimalLifecycleEvent
 
 
 def animal_timeline(*, animal: Animal) -> list[dict]:
@@ -39,6 +39,28 @@ def animal_timeline(*, animal: Animal) -> list[dict]:
                 "title": task.title,
                 "details": task.notes,
                 "status": task.status,
+            }
+        )
+    for lifecycle in AnimalLifecycleEvent.objects.filter(animal=animal).select_related(
+        "from_flock", "to_flock"
+    ):
+        if lifecycle.event_type == AnimalLifecycleEvent.EventType.STATUS_CHANGED:
+            details = f"{lifecycle.from_status} to {lifecycle.to_status}"
+        elif lifecycle.event_type == AnimalLifecycleEvent.EventType.FLOCK_TRANSFERRED:
+            details = (
+                f"{lifecycle.from_flock.name if lifecycle.from_flock else 'No flock'} to "
+                f"{lifecycle.to_flock.name if lifecycle.to_flock else 'No flock'}"
+            )
+        else:
+            details = lifecycle.reason
+        events.append(
+            {
+                "id": str(lifecycle.id),
+                "kind": "lifecycle",
+                "date": lifecycle.effective_date.isoformat(),
+                "title": lifecycle.get_event_type_display(),
+                "details": details,
+                "status": lifecycle.to_status or "recorded",
             }
         )
     return sorted(events, key=lambda event: event["date"], reverse=True)

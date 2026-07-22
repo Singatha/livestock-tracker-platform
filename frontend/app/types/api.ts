@@ -34,8 +34,26 @@ export interface Animal {
   species: 'sheep' | 'goat'
   breed: string
   sex: 'female' | 'male' | 'unknown'
+  flock: string | null
+  date_of_birth: string | null
   status: 'active' | 'sold' | 'deceased' | 'missing'
   needs_attention: boolean
+  notes: string
+}
+
+export interface AnimalLifecycleEvent {
+  id: string
+  event_type: 'registered' | 'status_changed' | 'flock_transferred'
+  effective_date: string
+  from_status: Animal['status'] | ''
+  to_status: Animal['status'] | ''
+  from_flock: string | null
+  from_flock_name: string | null
+  to_flock: string | null
+  to_flock_name: string | null
+  reason: string
+  recorded_by_name: string
+  created_at: string
 }
 
 export interface HealthObservation {
@@ -143,7 +161,7 @@ export interface MonthlyActivity {
 
 export interface TimelineEvent {
   id: string
-  kind: 'observation' | 'treatment' | 'task'
+  kind: 'observation' | 'treatment' | 'task' | 'lifecycle'
   date: string
   title: string
   details: string
