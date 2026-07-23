@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, BarChart3, Bell, CalendarCheck2, ChevronDown, Files, HeartHandshake, LayoutDashboard, LogOut, Menu, PawPrint, Pill, Plus, Scale, Settings, Upload, UserCircle, Wheat } from '@lucide/vue'
+import { Activity, BarChart3, Bell, CalendarCheck2, ChevronDown, Download, Files, HeartHandshake, LayoutDashboard, LogOut, Menu, PawPrint, Pill, Plus, Scale, Settings, Upload, UserCircle, Wheat } from '@lucide/vue'
 import type { Farm, Notification, Paginated, User } from '~/types/api'
 
 const selectedFarmId = useCookie<string | null>('selected-farm-id', {
@@ -15,6 +15,7 @@ const currentUser = ref<User | null>(null)
 const signingOut = ref(false)
 const { request, resetCsrfToken } = useApi()
 const toast = useToast()
+const { canInstall, install } = usePwaInstall()
 const unreadCount = computed(() => notifications.value.filter(item => !item.is_read).length)
 const currentFarm = computed(() => farms.value.find(farm => farm.id === selectedFarmId.value))
 const navigation = [
@@ -159,6 +160,7 @@ watch(selectedFarmId, loadNotifications)
             <DropdownMenuContent align="end" class="w-56">
               <DropdownMenuLabel><span class="block truncate">{{ currentUser ? `${currentUser.first_name} ${currentUser.last_name}`.trim() || currentUser.username : 'Account' }}</span><span class="block truncate text-xs font-normal text-muted-foreground">{{ currentUser?.email || currentUser?.username }}</span></DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem v-if="canInstall" @select="install"><Download />Install Flockwise</DropdownMenuItem>
               <DropdownMenuItem variant="destructive" :disabled="signingOut" @select="signOut"><LogOut />{{ signingOut ? 'Signing out…' : 'Sign out' }}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

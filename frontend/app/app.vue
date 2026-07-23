@@ -1,4 +1,5 @@
 <template>
+  <ConnectivityBanner />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
