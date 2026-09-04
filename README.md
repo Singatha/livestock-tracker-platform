@@ -65,6 +65,15 @@ Create an account from `/signup`, or create an admin user with:
 docker compose exec api python manage.py createsuperuser
 ```
 
+To load a dashboard-ready demonstration farm, run:
+
+```bash
+docker compose exec api python manage.py seed_demo_data
+```
+
+Sign in with `demo` / `demo-password`. The command is safe to rerun and accepts
+`--username` and `--password` when different local credentials are preferred.
+
 Stop the stack with `docker compose down`. Avoid `docker compose down -v` unless you intentionally want to delete local database and attachment volumes.
 
 ## Configuration
